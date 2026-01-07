@@ -10,6 +10,7 @@ import { theme } from './app/theme/theme.ts'
 
 import './styles.css'
 import reportWebVitals from './reportWebVitals.ts'
+import { AppProviders } from './app/AppProviders.tsx'
 
 // Create a new router instance
 const router = createRouter({
@@ -36,7 +37,9 @@ if (rootElement && !rootElement.innerHTML) {
     <StrictMode>
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <AppProviders>
         <RouterProvider router={router} />
+        </AppProviders>
       </ThemeProvider>
     </StrictMode>,
   )
