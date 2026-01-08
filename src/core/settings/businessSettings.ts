@@ -22,6 +22,8 @@ export type BusinessSettings = {
   theme: ThemePrefs;
   hours: Record<DayKey, DayHours>;
   rules: SchedulingRules;
+  mode?: string;
+  primaryColor?: string; // Added primaryColor property
 };
 
 export const defaultBusinessSettings: BusinessSettings = {

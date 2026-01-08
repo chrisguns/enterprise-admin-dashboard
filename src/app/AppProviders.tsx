@@ -5,7 +5,14 @@ import { createAppTheme } from "./theme/createAppTheme";
 
 function Themed({ children }: { children: React.ReactNode }) {
   const { settings } = useSettings();
-  const theme = React.useMemo(() => createAppTheme(settings), [settings]);
+  const theme = React.useMemo(() => {
+    const brandSettings = {
+      ...settings,
+      mode: (settings.mode as "light" | "dark") || "light", // Ensure type matches "light" | "dark"
+      primaryColor: settings.primaryColor || "#1976d2", // Provide a default value if necessary
+    };
+    return createAppTheme(brandSettings);
+  }, [settings]);
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
