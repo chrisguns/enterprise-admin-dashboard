@@ -38,7 +38,7 @@ if (rootElement && !rootElement.innerHTML) {
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <AppProviders>
-        <RouterProvider router={router} />
+          <RouterProvider router={router} />
         </AppProviders>
       </ThemeProvider>
     </StrictMode>,
