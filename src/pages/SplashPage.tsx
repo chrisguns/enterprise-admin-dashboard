@@ -18,26 +18,68 @@ export const Route = createFileRoute("/_public/")({
   component: SplashPage,
 })
 
+type Mode = "dark" | "light"
+type Tone = "blue" | "red" | "green"
+
 export default function SplashPage() {
-  // ---- Shared “iOS glass” tokens (keep consistent everywhere) ----
+  // ✅ Day 3 goal: same splash, supports both dark + light without breaking contrast
+  // Change this to "light" to preview the light theme
+  const MODE: Mode = "dark" as Mode
+
+  const isDark = MODE === "dark"
+
+  // ---------- Mode tokens ----------
+  const page = {
+    fg: isDark ? "rgba(255,255,255,0.92)" : "#0B1220",
+    fgMuted: isDark ? "rgba(234,242,255,0.80)" : "rgba(15,23,42,0.72)",
+    fgSubtle: isDark ? "rgba(234,242,255,0.55)" : "rgba(15,23,42,0.55)",
+    chipText: isDark ? "rgba(255,255,255,0.78)" : "rgba(15,23,42,0.72)",
+    link: isDark ? "rgba(180,210,255,0.92)" : "rgba(37,99,235,0.90)",
+    divider: isDark ? "rgba(255,255,255,0.10)" : "rgba(15,23,42,0.10)",
+    bg: isDark
+      ? `
+        radial-gradient(900px 500px at 50% -15%, rgba(180,210,255,0.28), transparent 60%),
+        radial-gradient(600px 420px at 85% 28%, rgba(255,170,170,0.16), transparent 58%),
+        radial-gradient(650px 420px at 10% 70%, rgba(160,235,200,0.12), transparent 60%),
+        linear-gradient(180deg, #070B12 0%, #0A1120 50%, #060A12 100%)
+      `
+      : `
+        radial-gradient(900px 520px at 20% 10%, rgba(169,208,255,0.85), transparent 55%),
+        radial-gradient(850px 520px at 85% 18%, rgba(255,199,199,0.75), transparent 58%),
+        radial-gradient(900px 560px at 55% 88%, rgba(185,245,219,0.55), transparent 60%),
+        linear-gradient(180deg, #F6F8FF 0%, #F4F6FB 40%, #F7F7FA 100%)
+      `,
+  } as const
+
+  // ---------- Shared “glass” tokens ----------
+  // NOTE: in LIGHT mode, glass needs less “white sheen” and darker borders,
+  // or it will wash everything out (your screenshot issue).
   const glassSurface = {
-    background:
-      "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)",
+    background: isDark
+      ? "linear-gradient(180deg, rgba(255,255,255,0.10) 0%, rgba(255,255,255,0.04) 100%)"
+      : "linear-gradient(180deg, rgba(255,255,255,0.72) 0%, rgba(255,255,255,0.45) 100%)",
     backdropFilter: "blur(22px) saturate(175%)",
     WebkitBackdropFilter: "blur(22px) saturate(175%)",
-    border: "1px solid rgba(255,255,255,0.16)",
-    boxShadow:
-      "0 40px 120px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.20)",
+    border: isDark
+      ? "1px solid rgba(255,255,255,0.16)"
+      : "1px solid rgba(15,23,42,0.10)",
+    boxShadow: isDark
+      ? "0 40px 120px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.20)"
+      : "0 30px 90px rgba(15,23,42,0.12), inset 0 1px 0 rgba(255,255,255,0.70)",
   } as const
 
   const glassPill = {
-    background:
-      "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06))",
+    background: isDark
+      ? "linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0.06))"
+      : "linear-gradient(180deg, rgba(255,255,255,0.78), rgba(255,255,255,0.55))",
     backdropFilter: "blur(18px) saturate(175%)",
     WebkitBackdropFilter: "blur(18px) saturate(175%)",
-    border: "1px solid rgba(255,255,255,0.16)",
-    boxShadow:
-      "0 18px 45px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.22)",
+    border: isDark
+      ? "1px solid rgba(255,255,255,0.16)"
+      : "1px solid rgba(15,23,42,0.10)",
+    boxShadow: isDark
+      ? "0 18px 45px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.22)"
+      : "0 16px 42px rgba(15,23,42,0.10), inset 0 1px 0 rgba(255,255,255,0.80)",
   } as const
 
   const glassButton = {
@@ -47,66 +89,73 @@ export default function SplashPage() {
     px: 2.5,
     py: 1.1,
     ...glassPill,
-    color: "rgba(255,255,255,0.92)",
+    color: isDark ? "rgba(255,255,255,0.92)" : "#0B1220",
     "&:hover": {
-      background:
-        "linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08))",
-      border: "1px solid rgba(255,255,255,0.24)",
+      background: isDark
+        ? "linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0.08))"
+        : "linear-gradient(180deg, rgba(255,255,255,0.88), rgba(255,255,255,0.62))",
+      border: isDark
+        ? "1px solid rgba(255,255,255,0.24)"
+        : "1px solid rgba(15,23,42,0.14)",
     },
   } as const
 
-  // Near-transparent glass “bubble” used for ALL icon containers on splash
-  const glassIcon = (tone: "blue" | "red" | "green") => {
+  // Near-transparent glass “bubble” used for icon containers (iOS-like)
+  const glassIcon = (tone: Tone) => {
     const toneMap = {
       blue: { ring: "rgba(58,111,234,0.22)", icon: "#3A6FEA" },
       red: { ring: "rgba(214,69,69,0.22)", icon: "#D64545" },
       green: { ring: "rgba(47,158,111,0.22)", icon: "#2F9E6F" },
     } as const
-  
+
     const t = toneMap[tone]
-  
+
     return {
-      width: 69,
+      width: 70,
       height: 52,
       borderRadius: 999,
       display: "grid",
       placeItems: "center",
-  
-      // ✅ near-transparent glass (not white)
-      background: "rgba(255,255,255,0.10)",
-  
-      // ✅ stronger blur makes it read as glass vs paint
+
+      // In LIGHT mode this must be more subtle, not chalk-white
+      background: isDark ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.42)",
       backdropFilter: "blur(26px) saturate(180%)",
       WebkitBackdropFilter: "blur(26px) saturate(180%)",
-  
-      // ✅ subtle ring + top highlight like iOS
-      border: `1px solid ${t.ring}`,
-      boxShadow: `
-        0 10px 26px rgba(0,0,0,0.22),
-        inset 0 1px 0 rgba(255,255,255,0.55),
-        inset 0 -1px 0 rgba(0,0,0,0.18)
-      `,
-  
+
+      border: isDark
+        ? `1px solid ${t.ring}`
+        : "1px solid rgba(15,23,42,0.10)",
+
+      boxShadow: isDark
+        ? `
+          0 10px 26px rgba(0,0,0,0.22),
+          inset 0 1px 0 rgba(255,255,255,0.55),
+          inset 0 -1px 0 rgba(0,0,0,0.18)
+        `
+        : `
+          0 14px 30px rgba(15,23,42,0.10),
+          inset 0 1px 0 rgba(255,255,255,0.90),
+          inset 0 -1px 0 rgba(15,23,42,0.06)
+        `,
+
       color: t.icon,
     } as const
   }
-  
-  
+
+  // Sheen overlay — this is what washed your light screenshot out.
+  // LIGHT mode needs a much smaller intensity.
+  const heroSheen = isDark
+    ? "linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04) 42%, transparent 65%)"
+    : "linear-gradient(120deg, rgba(255,255,255,0.22), rgba(255,255,255,0.06) 42%, transparent 70%)"
 
   return (
     <Box
       sx={{
         minHeight: "100vh",
-        color: "white",
         display: "flex",
         flexDirection: "column",
-        // premium dark + subtle pastel bleed
-        background: `
-          radial-gradient(900px 500px at 50% -15%, rgba(180,210,255,0.28), transparent 60%),
-          radial-gradient(600px 420px at 85% 28%, rgba(255,170,170,0.16), transparent 58%),
-          radial-gradient(650px 420px at 10% 70%, rgba(160,235,200,0.12), transparent 60%),
-          linear-gradient(180deg, #070B12 0%, #0A1120 50%, #060A12 100%)
-        `,
+        background: page.bg,
+        color: page.fg,
       }}
     >
       {/* Top bar */}
@@ -118,8 +167,10 @@ export default function SplashPage() {
                 width: 12,
                 height: 12,
                 borderRadius: 999,
-                bgcolor: "rgba(255,255,255,0.85)",
-                boxShadow: "0 0 0 6px rgba(255,255,255,0.08)",
+                bgcolor: isDark ? "rgba(255,255,255,0.85)" : "rgba(15,23,42,0.65)",
+                boxShadow: isDark
+                  ? "0 0 0 6px rgba(255,255,255,0.08)"
+                  : "0 0 0 6px rgba(15,23,42,0.06)",
               }}
             />
             <Typography sx={{ fontWeight: 900, letterSpacing: 0.2 }}>
@@ -132,7 +183,7 @@ export default function SplashPage() {
               sx={{
                 ml: 1,
                 ...glassPill,
-                color: "rgba(255,255,255,0.78)",
+                color: page.chipText,
                 "& .MuiChip-label": { fontWeight: 700 },
               }}
             />
@@ -145,8 +196,6 @@ export default function SplashPage() {
               ...glassButton,
               px: 2,
               py: 0.9,
-              fontWeight: 800,
-              color: "rgba(255,255,255,0.86)",
             }}
           >
             Sign in
@@ -183,9 +232,9 @@ export default function SplashPage() {
             sx={{
               position: "absolute",
               inset: 0,
-              background:
-                "linear-gradient(120deg, rgba(255,255,255,0.18), rgba(255,255,255,0.04) 42%, transparent 65%)",
+              background: heroSheen,
               pointerEvents: "none",
+              opacity: isDark ? 1 : 0.85,
             }}
           />
 
@@ -197,8 +246,10 @@ export default function SplashPage() {
                 label="Modern scheduling"
                 sx={{
                   ...glassPill,
-                  color: "rgba(255,255,255,0.85)",
-                  border: "1px solid rgba(150,190,255,0.22)",
+                  color: isDark ? "rgba(255,255,255,0.85)" : "rgba(15,23,42,0.80)",
+                  border: isDark
+                    ? "1px solid rgba(150,190,255,0.22)"
+                    : "1px solid rgba(37,99,235,0.16)",
                   "& .MuiChip-label": { fontWeight: 800 },
                 }}
               />
@@ -207,7 +258,7 @@ export default function SplashPage() {
                 label="Universal for any service business"
                 sx={{
                   ...glassPill,
-                  color: "rgba(255,255,255,0.78)",
+                  color: isDark ? "rgba(255,255,255,0.78)" : "rgba(15,23,42,0.72)",
                   "& .MuiChip-label": { fontWeight: 800 },
                 }}
               />
@@ -221,6 +272,7 @@ export default function SplashPage() {
                   letterSpacing: -1.0,
                   lineHeight: 1.02,
                   fontSize: { xs: 44, sm: 60, md: 76 },
+                  color: isDark ? "rgba(255,255,255,0.94)" : "#0B1220",
                 }}
               >
                 Schedule clients.
@@ -232,13 +284,13 @@ export default function SplashPage() {
                 sx={{
                   mt: 2,
                   maxWidth: 860,
-                  color: "rgba(234,242,255,0.80)",
+                  color: page.fgMuted,
                   fontSize: { xs: 15, sm: 16, md: 18 },
                   lineHeight: 1.6,
                 }}
               >
-                A modern booking experience for professionals who work by appointment —
-                stylists, therapists, coaches, consultants, and more.
+                A modern booking experience for professionals who work by appointment — stylists,
+                therapists, coaches, consultants, and more.
               </Typography>
             </Box>
 
@@ -253,22 +305,18 @@ export default function SplashPage() {
                 to="/book"
                 sx={{
                   ...glassButton,
-                  // a slightly brighter call-to-action
-                  background:
-                    "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08))",
-                  border: "1px solid rgba(255,255,255,0.22)",
+                  background: isDark
+                    ? "linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0.08))"
+                    : "linear-gradient(180deg, rgba(255,255,255,0.92), rgba(255,255,255,0.68))",
+                  border: isDark
+                    ? "1px solid rgba(255,255,255,0.22)"
+                    : "1px solid rgba(15,23,42,0.12)",
                 }}
               >
                 Book an appointment
               </Button>
 
-              <Button
-                component={Link}
-                to="/schedule"
-                sx={{
-                  ...glassButton,
-                }}
-              >
+              <Button component={Link} to="/schedule" sx={{ ...glassButton }}>
                 View availability
               </Button>
 
@@ -280,11 +328,15 @@ export default function SplashPage() {
                   bgcolor: "transparent",
                   background: "transparent",
                   boxShadow: "none",
-                  border: "1px solid rgba(255,255,255,0.12)",
-                  color: "rgba(180,210,255,0.92)",
+                  border: isDark
+                    ? "1px solid rgba(255,255,255,0.12)"
+                    : "1px solid rgba(15,23,42,0.10)",
+                  color: page.link,
                   "&:hover": {
-                    background: "rgba(180,210,255,0.08)",
-                    border: "1px solid rgba(180,210,255,0.22)",
+                    background: isDark ? "rgba(180,210,255,0.08)" : "rgba(37,99,235,0.08)",
+                    border: isDark
+                      ? "1px solid rgba(180,210,255,0.22)"
+                      : "1px solid rgba(37,99,235,0.18)",
                   },
                 }}
               >
@@ -292,15 +344,12 @@ export default function SplashPage() {
               </Button>
             </Stack>
 
-            <Divider sx={{ borderColor: "rgba(255,255,255,0.10)" }} />
+            <Divider sx={{ borderColor: page.divider }} />
 
             {/* Feature cards */}
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              spacing={3}
-              sx={{ pt: 0.5 }}
-            >
+            <Stack direction={{ xs: "column", md: "row" }} spacing={3} sx={{ pt: 0.5 }}>
               <FeatureCard
+                mode={MODE}
                 icon={<CalendarMonthRoundedIcon sx={{ fontSize: 30 }} />}
                 tone="green"
                 title="Fast booking"
@@ -308,6 +357,7 @@ export default function SplashPage() {
                 glassIcon={glassIcon}
               />
               <FeatureCard
+                mode={MODE}
                 icon={<AccessTimeRoundedIcon sx={{ fontSize: 30 }} />}
                 tone="red"
                 title="Business hours"
@@ -315,6 +365,7 @@ export default function SplashPage() {
                 glassIcon={glassIcon}
               />
               <FeatureCard
+                mode={MODE}
                 icon={<PaletteRoundedIcon sx={{ fontSize: 30 }} />}
                 tone="blue"
                 title="Light branding"
@@ -329,7 +380,7 @@ export default function SplashPage() {
       {/* Footer */}
       <Container maxWidth="xl" sx={{ pb: 3, pt: 1 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center">
-          <Typography sx={{ color: "rgba(234,242,255,0.55)", fontSize: 12 }}>
+          <Typography sx={{ color: page.fgSubtle, fontSize: 12 }}>
             © 2026 Schedule
           </Typography>
 
@@ -340,8 +391,8 @@ export default function SplashPage() {
               sx={{
                 textTransform: "none",
                 fontSize: 12,
-                color: "rgba(234,242,255,0.55)",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.06)" },
+                color: page.fgSubtle,
+                "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.06)" },
               }}
             >
               Privacy
@@ -352,8 +403,8 @@ export default function SplashPage() {
               sx={{
                 textTransform: "none",
                 fontSize: 12,
-                color: "rgba(234,242,255,0.55)",
-                "&:hover": { bgcolor: "rgba(255,255,255,0.06)" },
+                color: page.fgSubtle,
+                "&:hover": { bgcolor: isDark ? "rgba(255,255,255,0.06)" : "rgba(15,23,42,0.06)" },
               }}
             >
               Terms
@@ -366,95 +417,76 @@ export default function SplashPage() {
 }
 
 function FeatureCard({
-    icon,
-    title,
-    desc,
-    tone,
-    glassIcon,
-  }: {
-    icon: React.ReactNode
-    title: string
-    desc: string
-    tone: "blue" | "red" | "green"
-    glassIcon: (tone: "blue" | "red" | "green") => Record<string, unknown>
-  }) {
-    return (
-      <Paper
-        elevation={0}
-        sx={{
-          flex: 1,
-          borderRadius: 4,
-          p: 3,
-          minHeight: 140,
-  
-          /* White frosted glass */
-          background: "rgba(255,255,255,0.62)",
-          backdropFilter: "blur(26px) saturate(180%)",
-          WebkitBackdropFilter: "blur(26px) saturate(180%)",
-          border: "1px solid rgba(255,255,255,0.75)",
-  
-          boxShadow: `
-            0 28px 60px rgba(0,0,0,0.28),
-            inset 0 1px 0 rgba(255,255,255,0.85)
-          `,
-  
-          position: "relative",
-          overflow: "hidden",
-  
-          transition: "transform 200ms ease, box-shadow 200ms ease",
-          "&:hover": {
-            transform: "translateY(-4px)",
-            boxShadow: "0 36px 80px rgba(0,0,0,0.35)",
-          },
-        }}
-      >
-        {/* very subtle top sheen */}
-        <Box
-          sx={{
-            position: "absolute",
-            inset: 0,
-            background:
-              "linear-gradient(180deg, rgba(255,255,255,0.35), rgba(255,255,255,0.05) 40%, transparent)",
-            pointerEvents: "none",
-          }}
-        />
-  
-        {/* CONTENT */}
-        <Stack
-          direction="row"
-          spacing={2.5}
-          alignItems="center" // 👈 vertical centering
-          sx={{ position: "relative" }}
-        >
-          {/* Icon bubble on the left */}
-          <Box sx={glassIcon(tone)}>{icon}</Box>
-  
-          {/* Text on the right */}
-          <Box>
-            <Typography
-              sx={{
-                fontWeight: 900,
-                fontSize: 16,
-                color: "#0F172A",
-              }}
-            >
-              {title}
-            </Typography>
-  
-            <Typography
-              sx={{
-                mt: 0.4,
-                fontSize: 14,
-                lineHeight: 1.45,
-                color: "#1E293B",
-              }}
-            >
-              {desc}
-            </Typography>
-          </Box>
-        </Stack>
-      </Paper>
-    )
-  }
-  
-  
+  mode,
+  icon,
+  title,
+  desc,
+  tone,
+  glassIcon,
+}: {
+  mode: Mode
+  icon: React.ReactNode
+  title: string
+  desc: string
+  tone: Tone
+  glassIcon: (tone: Tone) => Record<string, unknown>
+}) {
+  const isDark = mode === "dark"
+
+  return (
+    <Paper
+      elevation={0}
+      sx={{
+        flex: 1,
+        borderRadius: 4,
+        p: 3,
+        minHeight: 140,
+
+        // Frosted card must match mode
+        background: isDark ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.72)",
+        backdropFilter: "blur(26px) saturate(180%)",
+        WebkitBackdropFilter: "blur(26px) saturate(180%)",
+        border: isDark ? "1px solid rgba(255,255,255,0.16)" : "1px solid rgba(15,23,42,0.10)",
+
+        boxShadow: isDark
+          ? "0 28px 60px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.18)"
+          : "0 26px 60px rgba(15,23,42,0.10), inset 0 1px 0 rgba(255,255,255,0.75)",
+
+        position: "relative",
+        overflow: "hidden",
+        transition: "transform 200ms ease, box-shadow 200ms ease",
+        "&:hover": {
+          transform: "translateY(-4px)",
+          boxShadow: isDark ? "0 36px 80px rgba(0,0,0,0.35)" : "0 34px 80px rgba(15,23,42,0.14)",
+        },
+      }}
+    >
+      <Stack direction="row" spacing={2.25} alignItems="center" sx={{ position: "relative" }}>
+        <Box sx={glassIcon(tone)}>{icon}</Box>
+
+        <Box>
+          <Typography
+            sx={{
+              fontWeight: 900,
+              fontSize: 16,
+              color: isDark ? "rgba(255,255,255,0.92)" : "#0F172A",
+            }}
+          >
+            {title}
+          </Typography>
+
+          <Typography
+            sx={{
+              mt: 0.4,
+              fontSize: 14,
+              lineHeight: 1.45,
+              color: isDark ? "rgba(234,242,255,0.78)" : "rgba(15,23,42,0.72)",
+            }}
+          >
+            {desc}
+          </Typography>
+        </Box>
+      </Stack>
+    </Paper>
+  )
+}
