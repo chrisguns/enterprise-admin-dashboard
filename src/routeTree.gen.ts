@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LoginRouteImport } from './routes/login'
 import { Route as PublicRouteImport } from './routes/_public'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as PublicIndexRouteImport } from './routes/_public/index'
@@ -16,8 +17,14 @@ import { Route as PublicBookRouteImport } from './routes/_public/book'
 import { Route as AppServicesRouteImport } from './routes/_app/services'
 import { Route as AppScheduleRouteImport } from './routes/_app/schedule'
 import { Route as AppPaymentsRouteImport } from './routes/_app/payments'
+import { Route as AppOnboardingRouteImport } from './routes/_app/onboarding'
 import { Route as AppClientsRouteImport } from './routes/_app/clients'
 
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PublicRoute = PublicRouteImport.update({
   id: '/_public',
   getParentRoute: () => rootRouteImport,
@@ -51,6 +58,11 @@ const AppPaymentsRoute = AppPaymentsRouteImport.update({
   path: '/payments',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOnboardingRoute = AppOnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppClientsRoute = AppClientsRouteImport.update({
   id: '/clients',
   path: '/clients',
@@ -58,7 +70,9 @@ const AppClientsRoute = AppClientsRouteImport.update({
 } as any)
 
 export interface FileRoutesByFullPath {
+  '/login': typeof LoginRoute
   '/clients': typeof AppClientsRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/payments': typeof AppPaymentsRoute
   '/schedule': typeof AppScheduleRoute
   '/services': typeof AppServicesRoute
@@ -66,7 +80,9 @@ export interface FileRoutesByFullPath {
   '/': typeof PublicIndexRoute
 }
 export interface FileRoutesByTo {
+  '/login': typeof LoginRoute
   '/clients': typeof AppClientsRoute
+  '/onboarding': typeof AppOnboardingRoute
   '/payments': typeof AppPaymentsRoute
   '/schedule': typeof AppScheduleRoute
   '/services': typeof AppServicesRoute
@@ -77,7 +93,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_app': typeof AppRouteWithChildren
   '/_public': typeof PublicRouteWithChildren
+  '/login': typeof LoginRoute
   '/_app/clients': typeof AppClientsRoute
+  '/_app/onboarding': typeof AppOnboardingRoute
   '/_app/payments': typeof AppPaymentsRoute
   '/_app/schedule': typeof AppScheduleRoute
   '/_app/services': typeof AppServicesRoute
@@ -87,19 +105,31 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
+    | '/login'
     | '/clients'
+    | '/onboarding'
     | '/payments'
     | '/schedule'
     | '/services'
     | '/book'
     | '/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/clients' | '/payments' | '/schedule' | '/services' | '/book' | '/'
+  to:
+    | '/login'
+    | '/clients'
+    | '/onboarding'
+    | '/payments'
+    | '/schedule'
+    | '/services'
+    | '/book'
+    | '/'
   id:
     | '__root__'
     | '/_app'
     | '/_public'
+    | '/login'
     | '/_app/clients'
+    | '/_app/onboarding'
     | '/_app/payments'
     | '/_app/schedule'
     | '/_app/services'
@@ -110,10 +140,18 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AppRoute: typeof AppRouteWithChildren
   PublicRoute: typeof PublicRouteWithChildren
+  LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_public': {
       id: '/_public'
       path: ''
@@ -163,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppPaymentsRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/onboarding': {
+      id: '/_app/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof AppOnboardingRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/clients': {
       id: '/_app/clients'
       path: '/clients'
@@ -175,6 +220,7 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppClientsRoute: typeof AppClientsRoute
+  AppOnboardingRoute: typeof AppOnboardingRoute
   AppPaymentsRoute: typeof AppPaymentsRoute
   AppScheduleRoute: typeof AppScheduleRoute
   AppServicesRoute: typeof AppServicesRoute
@@ -182,6 +228,7 @@ interface AppRouteChildren {
 
 const AppRouteChildren: AppRouteChildren = {
   AppClientsRoute: AppClientsRoute,
+  AppOnboardingRoute: AppOnboardingRoute,
   AppPaymentsRoute: AppPaymentsRoute,
   AppScheduleRoute: AppScheduleRoute,
   AppServicesRoute: AppServicesRoute,
@@ -205,6 +252,7 @@ const PublicRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   AppRoute: AppRouteWithChildren,
   PublicRoute: PublicRouteWithChildren,
+  LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -3,6 +3,7 @@ import { useSettings } from "../core/settings/SettingsProvider";
 
 export default function SchedulePage() {
   const { settings } = useSettings();
+
   return (
     <Card>
       <CardContent>
@@ -10,9 +11,11 @@ export default function SchedulePage() {
           <Typography variant="h5" sx={{ fontWeight: 900 }}>
             Schedule
           </Typography>
+
           <Typography variant="body2" color="text.secondary">
             {settings.businessName} — owner dashboard
           </Typography>
+
           <Typography variant="body2" color="text.secondary">
             (Today: route protection + app shell. Tomorrow: real calendar + availability.)
           </Typography>

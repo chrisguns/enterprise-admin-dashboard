@@ -1,18 +1,21 @@
 import * as React from "react";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { SettingsProvider, useSettings } from "../core/settings/SettingsProvider";
+import { AuthProvider } from "../core/auth/AuthProvider";
 import { createAppTheme } from "./theme/createAppTheme";
 
 function Themed({ children }: { children: React.ReactNode }) {
   const { settings } = useSettings();
+
   const theme = React.useMemo(() => {
     const brandSettings = {
       ...settings,
-      mode: (settings.mode as "light" | "dark") || "light", // Ensure type matches "light" | "dark"
-      primaryColor: settings.primaryColor || "#1976d2", // Provide a default value if necessary
+      mode: (settings.mode as "light" | "dark") || "light",
+      primaryColor: settings.primaryColor || "#1976d2",
     };
     return createAppTheme(brandSettings);
   }, [settings]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
@@ -23,8 +26,10 @@ function Themed({ children }: { children: React.ReactNode }) {
 
 export function AppProviders({ children }: { children: React.ReactNode }) {
   return (
-    <SettingsProvider>
-      <Themed>{children}</Themed>
-    </SettingsProvider>
+    <AuthProvider>
+      <SettingsProvider>
+        <Themed>{children}</Themed>
+      </SettingsProvider>
+    </AuthProvider>
   );
 }

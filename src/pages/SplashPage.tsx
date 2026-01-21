@@ -24,7 +24,7 @@ type Tone = "blue" | "red" | "green"
 export default function SplashPage() {
   // ✅ Day 3 goal: same splash, supports both dark + light without breaking contrast
   // Change this to "light" to preview the light theme
-  const MODE: Mode = "dark" as Mode
+  const MODE: Mode = "light" as Mode
 
   const isDark = MODE === "dark"
 
@@ -101,46 +101,56 @@ export default function SplashPage() {
   } as const
 
   // Near-transparent glass “bubble” used for icon containers (iOS-like)
-  const glassIcon = (tone: Tone) => {
+  const glassIcon = (tone: "blue" | "red" | "green") => {
     const toneMap = {
-      blue: { ring: "rgba(58,111,234,0.22)", icon: "#3A6FEA" },
-      red: { ring: "rgba(214,69,69,0.22)", icon: "#D64545" },
-      green: { ring: "rgba(47,158,111,0.22)", icon: "#2F9E6F" },
+      blue: { ring: "rgba(58,111,234,0.28)", icon: "#3A6FEA" },
+      red: { ring: "rgba(214,69,69,0.28)", icon: "#D64545" },
+      green: { ring: "rgba(47,158,111,0.28)", icon: "#2F9E6F" },
     } as const
-
+  
     const t = toneMap[tone]
-
+  
     return {
-      width: 70,
-      height: 52,
-      borderRadius: 999,
+      // ✅ true circle
+      width: 44,
+      height: 44,
+      borderRadius: "50%",
+      flex: "0 0 44px", // ✅ prevents flex squish/stretch
+      position: "relative",
       display: "grid",
       placeItems: "center",
-
-      // In LIGHT mode this must be more subtle, not chalk-white
-      background: isDark ? "rgba(255,255,255,0.10)" : "rgba(255,255,255,0.42)",
-      backdropFilter: "blur(26px) saturate(180%)",
-      WebkitBackdropFilter: "blur(26px) saturate(180%)",
-
-      border: isDark
-        ? `1px solid ${t.ring}`
-        : "1px solid rgba(15,23,42,0.10)",
-
-      boxShadow: isDark
-        ? `
-          0 10px 26px rgba(0,0,0,0.22),
-          inset 0 1px 0 rgba(255,255,255,0.55),
-          inset 0 -1px 0 rgba(0,0,0,0.18)
-        `
-        : `
-          0 14px 30px rgba(15,23,42,0.10),
-          inset 0 1px 0 rgba(255,255,255,0.90),
-          inset 0 -1px 0 rgba(15,23,42,0.06)
+      overflow: "hidden",
+  
+      // ✅ keep svg crisp (on top)
+      "& > svg": {
+        position: "relative",
+        zIndex: 1,
+        fontSize: 22,
+        transform: "translateZ(0)",
+      },
+  
+      // ✅ glass layer behind icon
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        inset: 0,
+        borderRadius: "50%",
+        background: "rgba(255,255,255,0.22)",
+        border: `1px solid ${t.ring}`,
+        boxShadow: `
+          0 8px 18px rgba(0,0,0,0.18),
+          inset 0 1px 0 rgba(255,255,255,0.85)
         `,
-
+      },
+  
+      // ⚠️ IMPORTANT: remove backdropFilter here (this is what keeps rasterizing)
+      // backdropFilter: "blur(...)",
+      // WebkitBackdropFilter: "blur(...)",
+  
       color: t.icon,
     } as const
   }
+  
 
   // Sheen overlay — this is what washed your light screenshot out.
   // LIGHT mode needs a much smaller intensity.

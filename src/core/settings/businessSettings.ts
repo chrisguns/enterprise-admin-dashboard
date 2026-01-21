@@ -19,15 +19,20 @@ export type ThemePrefs = {
 
 export type BusinessSettings = {
   businessName: string;
+  businessHours: string;
   theme: ThemePrefs;
   hours: Record<DayKey, DayHours>;
   rules: SchedulingRules;
   mode?: string;
   primaryColor?: string; // Added primaryColor property
+  timezone?: string;
+  hoursHint?: string;
+  onboardingComplete?: boolean;
 };
 
 export const defaultBusinessSettings: BusinessSettings = {
   businessName: "Stylist Studio",
+  businessHours: "09:00 - 19:00", // Added businessHours property
   theme: {
     mode: "light",
     primary: "#1E5EFF",
